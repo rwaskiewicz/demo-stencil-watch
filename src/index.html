@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0" />
+    <title>Stencil Component Starter</title>
+
+    <script type="module" src="/build/demo-stencil-watch.esm.js"></script>
+    <script nomodule src="/build/demo-stencil-watch.js"></script>
+  </head>
+  <body>
+    <my-component id="Dude"></my-component>
+    <my-component id="Stuffs" has-histogram="false"></my-component>
+  </body>
+
+  <script>
+    const histogram = [
+      [0, 0],
+      [20, 12],
+      [40, 25],
+      [60, 55],
+      [80, 10],
+      [100, 0],
+    ];
+
+    const dude = document.querySelector('#Dude');
+    dude.histogram = histogram;
+    dude.hasHistogram = true;
+
+    setTimeout(() => {
+      dude.histogram = undefined;
+      dude.hasHistogram = false;
+    }, 7000);
+  </script>
+</html>
