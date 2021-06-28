@@ -1,75 +1,57 @@
-![Built With Stencil](https://img.shields.io/badge/-Built%20With%20Stencil-16161d.svg?logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE5LjIuMSwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IgoJIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCA1MTIgNTEyOyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI%2BCjxzdHlsZSB0eXBlPSJ0ZXh0L2NzcyI%2BCgkuc3Qwe2ZpbGw6I0ZGRkZGRjt9Cjwvc3R5bGU%2BCjxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik00MjQuNywzNzMuOWMwLDM3LjYtNTUuMSw2OC42LTkyLjcsNjguNkgxODAuNGMtMzcuOSwwLTkyLjctMzAuNy05Mi43LTY4LjZ2LTMuNmgzMzYuOVYzNzMuOXoiLz4KPHBhdGggY2xhc3M9InN0MCIgZD0iTTQyNC43LDI5Mi4xSDE4MC40Yy0zNy42LDAtOTIuNy0zMS05Mi43LTY4LjZ2LTMuNkgzMzJjMzcuNiwwLDkyLjcsMzEsOTIuNyw2OC42VjI5Mi4xeiIvPgo8cGF0aCBjbGFzcz0ic3QwIiBkPSJNNDI0LjcsMTQxLjdIODcuN3YtMy42YzAtMzcuNiw1NC44LTY4LjYsOTIuNy02OC42SDMzMmMzNy45LDAsOTIuNywzMC43LDkyLjcsNjguNlYxNDEuN3oiLz4KPC9zdmc%2BCg%3D%3D&colorA=16161d&style=flat-square)
+# Demo Watcher
 
-# Stencil Component Starter
+There are two ways to run this:
 
-This is a starter project for building a standalone Web Component using Stencil.
+1. `npm start`
+1. `npm build` then `http-server -c0 site` (or use some other way to spin up a quick server)
 
-Stencil is also great for building entire apps. For that, use the [stencil-app-starter](https://github.com/ionic-team/stencil-app-starter) instead.
+The first way loads everything async.
+The second way essentially does a custom elements build and loads the elements via `defineCustomElements`
 
-# Stencil
+The `src/index.html` and `site/index.html` differ only in how they load the bundles. Otherwise, they set up a timeout similating a change from some outside influence. They also contain a method called `runTest()` that performs an initialization of data.
 
-Stencil is a compiler for building fast web apps using Web Components.
+There are two ways that you can call `runTest()`:
 
-Stencil combines the best concepts of the most popular frontend frameworks into a compile-time rather than run-time tool.  Stencil takes TypeScript, JSX, a tiny virtual DOM layer, efficient one-way data binding, an asynchronous rendering pipeline (similar to React Fiber), and lazy-loading out of the box, and generates 100% standards-based Web Components that run in any browser supporting the Custom Elements v1 spec.
-
-Stencil components are just Web Components, so they work in any major framework or with no framework at all.
-
-## Getting Started
-
-To start building a new web component using Stencil, clone this repo to a new directory:
-
-```bash
-git clone https://github.com/ionic-team/stencil-component-starter.git my-component
-cd my-component
-git remote rm origin
+```JavaScript
+    // runTest();
+    customElements.whenDefined('my-component').then(runTest);
 ```
 
-and run:
+Only the second way is valid, IMO, but I have both there for completeness.
 
-```bash
-npm install
-npm start
+There are two instances of the component:
+
+```HTML
+    <my-component id="Dude"></my-component>
+    <my-component id="Stuffs" has-histogram="false"></my-component>
 ```
 
-To build the component for production, run:
+- with Dude, the `hasHistogram` property is set in the JavaScript (see `runTest()`)
+- with Stuffs, the `hasHistogram` property is set declaritively via the `has-histogram` attribute
 
-```bash
-npm run build
-```
+## Behavior
 
-To run the unit tests for the components, run:
+### Expected
 
-```bash
-npm test
-```
+For both Dude and Stuffs, the Has Histogram Watcher should be called originally once for the initialization that we are forcing vi the `componentWillLoad()` call.
 
-Need help? Check out our docs [here](https://stenciljs.com/docs/my-first-component).
+Then, after 3 seconds, it should be called a second time on each.
 
+### Async Load
 
-## Naming Components
+Works as expected
 
-When creating new component tags, we recommend _not_ using `stencil` in the component name (ex: `<stencil-datepicker>`). This is because the generated component has little to nothing to do with Stencil; it's just a web component!
+### Sync `defineCustomElements()` Load
 
-Instead, use a prefix that fits your company or any name for a group of related components. For example, all of the Ionic generated web components use the prefix `ion`.
+Stuffs works as expected.
 
+Dude works as such:
 
-## Using this component
+- watcher fires on initialization due to `runTest()` setting the value
+- watcher fires again on initialization due to `componentWillLoad()`
 
-There are three strategies we recommend for using web components built with Stencil.
+So at this point, Stuffs has called the watcher once (as expected) and Dude has called it twice (once too many)
 
-The first step for all three of these strategies is to [publish to NPM](https://docs.npmjs.com/getting-started/publishing-npm-packages).
+After the timer, Dude goes to 3 calls, and Stuffs goes to 2. This makes sense given the initialization, but the initialization was wrong in calling the watcher twice for Dude.
 
-### Script tag
-
-- Put a script tag similar to this `<script src='https://unpkg.com/my-component@0.0.1/dist/my-component.esm.js'></script>` in the head of your index.html
-- Then you can use the element anywhere in your template, JSX, html etc
-
-### Node Modules
-- Run `npm install my-component --save`
-- Put a script tag similar to this `<script src='node_modules/my-component/dist/my-component.esm.js'></script>` in the head of your index.html
-- Then you can use the element anywhere in your template, JSX, html etc
-
-### In a stencil-starter app
-- Run `npm install my-component --save`
-- Add an import to the npm packages `import my-component;`
-- Then you can use the element anywhere in your template, JSX, html etc
+The only way I have found around this is a bogus state flag. See isInitialized, which I have partially commented out. If the code that sets that true is uncommented, then this works fine, but that is a lot of manual state management in each of the components that someone would write.

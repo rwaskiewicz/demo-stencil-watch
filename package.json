@@ -15,7 +15,7 @@
     "loader/"
   ],
   "scripts": {
-    "build": "stencil build --docs",
+    "build": "stencil build --docs && npx rollup --config",
     "start": "stencil build --dev --watch --serve",
     "test": "stencil test --spec --e2e",
     "test.watch": "stencil test --spec --e2e --watchAll",
@@ -23,6 +23,10 @@
   },
   "dependencies": {
     "@stencil/core": "^2.0.1"
+  },
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "~13.0.0",
+    "rollup": "~2.52.2"
   },
   "license": "MIT"
 }

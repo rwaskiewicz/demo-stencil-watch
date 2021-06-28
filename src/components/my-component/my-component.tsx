@@ -8,26 +8,22 @@ import { Element, Component, Prop, h, Watch } from '@stencil/core';
 export class MyComponent {
   @Element() el: HTMLElement;
 
-  histWatcherCalls = 0;
   hasHistWatcherCalls = 0;
 
-  componentWillLoad() {
-    // Uncomment these to fire the watchers on initialization...
-    // this.histogramWatcher(this.histogram, undefined);
-    // this.hasHistogramWatcher(this.hasHistogram, undefined);
-  }
+  private isInitialized = false;
 
-  @Prop() histogram: Array<Array<number>>;
-  @Watch('histogram')
-  histogramWatcher(newValue?: Array<Array<number>>, oldValue?: Array<Array<number>>) {
-    if (newValue !== oldValue) {
-      this.histWatcherCalls++;
+  componentWillLoad() {
+    console.log('componentWillLoad', this.el.getAttribute('id'));
+    if (!this.isInitialized) {
+      this.hasHistogramWatcher(this.hasHistogram, undefined);
     }
   }
 
   @Prop({ reflect: true }) hasHistogram: boolean;
   @Watch('hasHistogram')
   hasHistogramWatcher(newValue?: boolean, oldValue?: boolean) {
+    // this.isInitialized = true;
+    console.log('hasHistogramWatcher', this.el.getAttribute('id'), newValue, oldValue);
     if (newValue !== oldValue) {
       this.hasHistWatcherCalls++;
     }
@@ -36,8 +32,9 @@ export class MyComponent {
   render() {
     return (
       <div>
-        <div>{this.el.getAttribute('id')}</div>
-        <div>Histogram Watcher Calls: {this.histWatcherCalls}</div>
+        <div>
+          {this.el.getAttribute('id')}: {this.hasHistogram?.toString()}
+        </div>
         <div>Has Histogram Watcher Calls: {this.hasHistWatcherCalls}</div>
       </div>
     );

@@ -8,7 +8,6 @@ import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 export namespace Components {
     interface MyComponent {
         "hasHistogram": boolean;
-        "histogram": Array<Array<number>>;
     }
 }
 declare global {
@@ -25,7 +24,6 @@ declare global {
 declare namespace LocalJSX {
     interface MyComponent {
         "hasHistogram"?: boolean;
-        "histogram"?: Array<Array<number>>;
     }
     interface IntrinsicElements {
         "my-component": MyComponent;
