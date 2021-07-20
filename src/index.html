@@ -9,23 +9,17 @@
     <script nomodule src="/build/demo-stencil-watch.js"></script>
   </head>
   <body>
-    <my-component id="Dude"></my-component>
     <my-component id="Stuffs" has-histogram="false"></my-component>
   </body>
 
   <script>
-    setTimeout(() => {
-      console.log('Change after timeout');
-      document.querySelector('#Dude').hasHistogram = false;
-      document.querySelector('#Stuffs').hasHistogram = true;
-    }, 3000);
-
     const runTest = () => {
       console.log('running runTest');
-      document.querySelector('#Dude').hasHistogram = true;
+      document.querySelector('#Stuffs').hasHistogram = true;
     };
 
-    // runTest();
+    setTimeout(() => document.querySelector('#Stuffs').hasHistogram = false, 5000)
+
     customElements.whenDefined('my-component').then(runTest);
   </script>
 </html>
