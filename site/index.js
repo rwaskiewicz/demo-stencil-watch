@@ -1,4 +1,6 @@
-import { defineCustomElements } from '../dist/custom-elements/index';
+// import { defineCustomElement } from '../dist/components/my-component';
 
-console.log('calling defineCustomElements()');
-defineCustomElements();
+// console.log('calling defineCustomElements()');
+// defineCustomElement();
+console.log('hello')
+import '../dist/components/my-component';
